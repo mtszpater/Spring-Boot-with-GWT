@@ -16,91 +16,142 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
+        <gwtVersion>2.8.2</gwtVersion>
     </properties>
-
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.google.gwt</groupId>
-                <artifactId>gwt</artifactId>
-                <version>2.8.2</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>provided</scope>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>com.google.gwt</groupId>-->
-            <!--<artifactId>gwt-dev</artifactId>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-
     </dependencies>
+
     <build>
-        <finalName>${project.artifactId}</finalName>
-        <outputDirectory>${project.build.directory}/${project.artifactId}/WEB-INF/classes</outputDirectory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>2.8.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <runTarget>Google_web_toolkit.html</runTarget>
-                    <hostedWebapp>${project.build.directory}/${project.artifactId}</hostedWebapp>
-                    <webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory>
-                </configuration>
-            </plugin>
-            <!-- Copy static web files before executing gwt:run -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exploded</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+
+    <!-- BUILD WAR WITH EMBEDDED TOMCAT: clean package -->
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <build>
+                <finalName>${project.artifactId}</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>gwt-maven-plugin</artifactId>
+                        <version>2.8.2</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <runTarget>Google_web_toolkit.html</runTarget>
+                            <hostedWebapp>${project.build.directory}/${project.artifactId}</hostedWebapp>
+                            <webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory>
+                        </configuration>
+                    </plugin>
+                    <!-- Copy static web files before executing gwt:run -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exploded</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <!-- RUN DEBUG MODE: mvn clean spring-boot:run && mvn gwt:devmode -Pgwt-dev -->
+        <profile>
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-dev</artifactId>
+                    <version>${gwtVersion}</version>
+                    <scope>provided</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>net.sourceforge.htmlunit</groupId>
+                            <artifactId>htmlunit</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+
+            <id>gwt-dev</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/java</directory>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>net.ltgt.gwt.maven</groupId>
+                        <artifactId>gwt-maven-plugin</artifactId>
+                        <version>1.0-rc-6</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <moduleName>com.example.demo.google_web_toolkit</moduleName>
+                            <moduleShortName>google_web_toolkit</moduleShortName>
+                            <startupUrls>
+                                <startupUrl>Google_web_toolkit.html</startupUrl>
+                            </startupUrls>
+                            <devmodeArgs>
+                                <devmodeArg>-noserver</devmodeArg>
+                                <devmodeArg>-port</devmodeArg>
+                                <devmodeArg>8080</devmodeArg>
+                            </devmodeArgs>
+                            <classpathScope>compile</classpathScope>
+                            <devmodeWorkDir>${project.build.directory}/classes/static</devmodeWorkDir>
+                            <launcherDir>${project.build.directory}/classes/static</launcherDir>
+                            <warDir>${project.build.directory}/classes/static</warDir>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

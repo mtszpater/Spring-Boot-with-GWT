@@ -43,9 +43,9 @@ public class GoogleWebToolkit implements EntryPoint {
         HTML serverResponseLabel = new HTML();
         VerticalPanel vPanel = new VerticalPanel();
         vPanel.addStyleName("vPanel");
-        vPanel.add(new HTML("Sending message to the server:"));
+        vPanel.add(new HTML("Sending mee to the server:"));
         vPanel.add(textToServerLabel);
-        vPanel.add(new HTML("<br><b>Server replies:</b>"));
+        vPanel.add(new HTML("<br><b>Server rep:</b>"));
         vPanel.add(serverResponseLabel);
         vPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
         vPanel.add(closeButton);
@@ -75,7 +75,7 @@ public class GoogleWebToolkit implements EntryPoint {
                 warningLabel.setText("");
                 String textToServer = nameField.getText();
                 if (textToServer == null || textToServer.isEmpty()) {
-                    warningLabel.setText("Please enter the message");
+                    warningLabel.setText("Please enteeeeer the message");
                     return;
                 }
 
