@@ -1,7 +1,6 @@
 # Spring-Boot-with-GWT
 
 build:
-
 `
 $ mvn clean package
 `
