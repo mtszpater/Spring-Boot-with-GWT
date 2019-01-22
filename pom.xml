@@ -25,10 +25,6 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
@@ -61,6 +57,13 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter</artifactId>
+                </dependency>
+            </dependencies>
 
             <build>
                 <finalName>${project.artifactId}</finalName>
@@ -103,7 +106,31 @@
         </profile>
 
 
-        <!-- RUN DEBUG MODE: mvn clean spring-boot:run && mvn gwt:devmode -Pgwt-dev -->
+        <!-- RUN DEBUG MODE: mvn clean spring-boot:run -Dspring-boot.run.profiles=debug && mvn gwt:devmode -Pgwt-dev -->
+
+
+        <profile>
+            <id>debug</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.google.gwt</groupId>
+                    <artifactId>gwt-dev</artifactId>
+                    <version>${gwtVersion}</version>
+                    <scope>provided</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>net.sourceforge.htmlunit</groupId>
+                            <artifactId>htmlunit</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+        </profile>
+
+
+
+
+
         <profile>
             <dependencies>
                 <dependency>
